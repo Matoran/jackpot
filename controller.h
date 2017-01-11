@@ -1,0 +1,7 @@
+
+#ifndef JACKPOT_CONTROLLER_H
+#define JACKPOT_CONTROLLER_H
+
+#endif //JACKPOT_CONTROLLER_H
+
+bla;
