@@ -18,7 +18,7 @@ int main() {
     sigemptyset(&mask);
     sigaddset(&mask, SIGINT);
     sigaddset(&mask, SIGQUIT);
-    sigqddset(&mask, SIGTSTP);
+    sigaddset(&mask, SIGTSTP);
     pthread_sigmask(SIG_SETMASK, &mask, &maskold);
 
     int sig;
@@ -29,13 +29,13 @@ int main() {
         if (sig == SIGINT){
             if(x < NThread - 2){
                 wheel.x -> stop = true;
+                x++;
             }
         }else if (sig == SIGTSTP){
-            for (int i = 0; i < NThread; i++) {
+            for (int i = 0; i < (NThread -2); i++) {
                 wheel.i -> restart = true;
             } //-> pthread_cond_broadcast(pthread_cond_t *cond) ?
         }
-            puts("Be strong, I whispered to my wifi signal!");
     } while (sig != SIGQUIT);
 
     for (int i = 0; i < NThread; i++) {
