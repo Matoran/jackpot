@@ -10,11 +10,6 @@
 #include "controller.h"
 #include <signal.h>
 
-static void handler(int signum) {
-    char msg[] = "SIGINT received! Aborted.\n";
-    write(STDOUT_FILENO, msg, strlen(msg));
-    _exit(EXIT_SUCCESS);
-}
 
 int main() {
 
@@ -31,18 +26,18 @@ int main() {
     do {
         sigwait(&mask, &sig);
         if (sig == SIGINT){
-            if(x < ){
+            if(x < NThread - 2){
                 wheel.x -> stop = true;
             }
         }else if (sig == SIGTSTP){
-            for (int i = 0; i < ; i++) {
+            for (int i = 0; i < NThread; i++) {
                 wheel.i -> restart = true;
             }
         }
             puts("Be strong, I whispered to my wifi signal!");
     } while (sig != SIGQUIT);
 
-    for (int i = 0; i < ; i++) {
+    for (int i = 0; i < NThread; i++) {
         thread.i -> exit = true;
     }
 
