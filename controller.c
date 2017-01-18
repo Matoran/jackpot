@@ -33,14 +33,14 @@ int main() {
         }else if (sig == SIGTSTP){
             for (int i = 0; i < NThread; i++) {
                 wheel.i -> restart = true;
-            }
+            } //-> pthread_cond_broadcast(pthread_cond_t *cond) ?
         }
             puts("Be strong, I whispered to my wifi signal!");
     } while (sig != SIGQUIT);
 
     for (int i = 0; i < NThread; i++) {
         thread.i -> exit = true;
-    }
+    } //-> pthread_cond_broadcast(pthread_cond_t *cond) ?
 
     return EXIT_SUCCESS;
 }
