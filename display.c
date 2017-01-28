@@ -54,7 +54,7 @@ void *display(void *paramsDisplay) {
                         printf("error");
                 }
                 printf("\e[6;1H");
-                printf("You won 2 coins");
+                printf("You won 454 coins");
                 printf("\e[7;1H");
                 printf("12 coins left in the machine");
                 break;

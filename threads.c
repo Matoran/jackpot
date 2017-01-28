@@ -28,6 +28,8 @@ void createThreads(){
     paramsSpinnerSt paramsSpinners[NUMBER_SPINNERS];
 
     bool quit = false;
+    uint money = MONEY;
+
 
     pthread_mutex_t mutex;
     pthread_mutex_init(&mutex,NULL);
@@ -55,16 +57,28 @@ void createThreads(){
     paramsDisplay.quit = &quit;
     paramsDisplay.spinners = paramsSpinners;
     paramsDisplay.state = BEGIN;
-    pthread_create(&displayThread, NULL, display, &paramsDisplay);
-
+    paramsDisplay.money = &money;
+    int code = pthread_create(&displayThread, NULL, display, &paramsDisplay);
+    if (code != 0) {
+        fprintf(stderr, "pthread_create failed!\n");
+        exit(42);
+    }
     //controller
     pthread_t controllerThread;
     paramsControllerSt paramsController;
     paramsController.quit = &quit;
     paramsController.spinners = paramsSpinners;
     paramsController.state = &paramsDisplay.state;
-    pthread_create(&controllerThread, NULL, controller, &paramsController);
+    paramsController.money = &money;
+    code = pthread_create(&controllerThread, NULL, controller, &paramsController);
+    if (code != 0) {
+        fprintf(stderr, "pthread_create failed!\n");
+        exit(42);
+    }
     for (uint i = 0; i < NUMBER_SPINNERS+1; i++) {
         pthread_join(threads[i], NULL);
     }
+    pthread_join(displayThread, NULL);
+    pthread_join(controllerThread, NULL);
+
 }

@@ -18,6 +18,7 @@ typedef struct paramsDisplaySt {
     bool *quit;
     paramsSpinnerSt *spinners;
     uint state;
+    uint *money;
 } paramsDisplaySt;
 
 extern void *display(void *paramsDisplay);

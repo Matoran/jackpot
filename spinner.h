@@ -9,7 +9,7 @@
 #include <stdbool.h>
 
 #define ALPHABET "0123456789"
-#define BASETIME 120000
+#define BASETIME 1200000
 
 typedef struct paramsSpinnerSt {
     uint numberThreads;

@@ -35,12 +35,17 @@ void *controller(void *paramsController) {
             if(actualSpinner < NUMBER_SPINNERS){
                 params->spinners[actualSpinner].run = false;
                 actualSpinner++;
+                if(actualSpinner == NUMBER_SPINNERS){
+                    *params->state = END;
+                }
             }
         }else if (sig == SIGTSTP){ // ctrl + z insert money
             for (int i = 0; i < NUMBER_SPINNERS; i++) {
                 params->spinners[i].run = true;
                 pthread_cond_signal(params->spinners[i].cond);
             }
+            actualSpinner = 0;
+            (*params->money)++;
             *params->state = GAME;
         }else if(sig == SIGUSR1){
 
@@ -48,9 +53,9 @@ void *controller(void *paramsController) {
     } while (sig != SIGQUIT); //ctrl + \ quit game
     *params->quit = true;
     for (int i = 0; i < NUMBER_SPINNERS; i++) {
-
+        pthread_cond_signal(params->spinners[i].cond);
         //thread.i -> exit = true;
     } //-> pthread_cond_broadcast(pthread_cond_t *cond) ?
 
-    return EXIT_SUCCESS;
+    return NULL;
 }

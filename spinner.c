@@ -26,7 +26,7 @@ void *spinner(void *paramsSpinner) {
             clock_gettime(CLOCK_REALTIME, &start);
 
             params->pos++;
-            if (params->pos >= sizeof(ALPHABET)/sizeof(char)) {
+            if (params->pos >= sizeof(ALPHABET)/sizeof(char)-1) {
                 params->pos = 0;
             }
             clock_gettime(CLOCK_REALTIME, &finish);

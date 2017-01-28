@@ -8,6 +8,7 @@ typedef struct paramsControllerSt {
     bool *quit;
     paramsSpinnerSt *spinners;
     uint *state;
+    uint *money;
 } paramsControllerSt;
 
 void *controller(void *paramsController);
