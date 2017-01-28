@@ -15,7 +15,7 @@
 void *spinner(void *paramsThread){
     paramsSpinnerSt *params = (paramsSpinnerSt *) paramsThread;
     struct timespec start, finish;
-    double microSecondToWait = 120 / params->idThread;
+    double microSecondToWait = BASETIME / params->idThread;
 
     while(!*params->quit){
         clock_gettime(CLOCK_REALTIME, &start);
