@@ -6,7 +6,7 @@
 #define JACKPOT_THREADS_H
 
 #define NUMBER_SPINNERS 3
-#define MONEY 10
+#define MONEY 2
 
 void createThreads();
 

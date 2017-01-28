@@ -8,7 +8,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define ALPHABET "0123456789"
+#define ALPHABET "01"
+#define SIZE (sizeof(ALPHABET)/sizeof(char)-1)
 #define BASETIME 1200000
 
 typedef struct paramsSpinnerSt {

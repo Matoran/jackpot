@@ -26,16 +26,17 @@ void *spinner(void *paramsSpinner) {
             clock_gettime(CLOCK_REALTIME, &start);
 
             params->pos++;
-            if (params->pos >= sizeof(ALPHABET)/sizeof(char)-1) {
+            if (params->pos >= SIZE) {
                 params->pos = 0;
             }
+            params->value = ALPHABET[params->pos];
             clock_gettime(CLOCK_REALTIME, &finish);
             double elapsed = (finish.tv_sec - start.tv_sec) * 1000000;
             elapsed += (finish.tv_nsec - start.tv_nsec) / 1000.0;
             if (microSecondToWait - elapsed > 0) {
                 usleep(microSecondToWait - elapsed);
             }
-            params->value = ALPHABET[params->pos];
+
         }
 
     }

@@ -15,7 +15,6 @@
 void *display(void *paramsDisplay) {
     setbuf(stdout,0);
     paramsDisplaySt *params = (paramsDisplaySt*) paramsDisplay;
-    int win = 0;
     double microSecondToWait = 1000000.0 / FREQUENCY;
     struct timespec start, finish;
     while (!*params->quit) {
@@ -39,24 +38,33 @@ void *display(void *paramsDisplay) {
                 printf("\e[1;1H");
                 printf("Game finished!");
                 printf("\e[5;1H");
-                switch (win) {
-                    case 0:
-                    case 1:
+                switch (params->win) {
+                    case LOSE:
                         printf("You lost!");
                         break;
-                    case 2:
+                    case DOUBLE_WIN:
                         printf("Double win!");
+                        printf("\e[6;1H");
+                        printf("You won %d coins", params->lastWin);
                         break;
-                    case 3:
+                    case JACKPOT:
                         printf("JACKPOT!");
+                        printf("\e[6;1H");
+                        printf("You won %d coins", params->lastWin);
                         break;
                     default:
                         printf("error");
                 }
-                printf("\e[6;1H");
-                printf("You won 454 coins");
+
                 printf("\e[7;1H");
-                printf("12 coins left in the machine");
+                printf("%d coins left in the machine", *params->money);
+                break;
+            case QUIT:
+                printf("\e[2J");
+                printf("\e[1;1H");
+                printf("Come again soon!");
+                printf("\e[2;1H");
+                pthread_cond_signal(params->cond);
                 break;
             default:
                 printf("error unknow state");

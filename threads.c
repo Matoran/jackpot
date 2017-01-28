@@ -51,6 +51,8 @@ void createThreads(){
         }
     }
 
+    pthread_cond_t condController = PTHREAD_COND_INITIALIZER;
+
     //display
     pthread_t displayThread;
     paramsDisplaySt paramsDisplay;
@@ -58,6 +60,9 @@ void createThreads(){
     paramsDisplay.spinners = paramsSpinners;
     paramsDisplay.state = BEGIN;
     paramsDisplay.money = &money;
+    paramsDisplay.cond = &condController;
+    paramsDisplay.win = LOSE;
+    paramsDisplay.lastWin = 0;
     int code = pthread_create(&displayThread, NULL, display, &paramsDisplay);
     if (code != 0) {
         fprintf(stderr, "pthread_create failed!\n");
@@ -68,14 +73,15 @@ void createThreads(){
     paramsControllerSt paramsController;
     paramsController.quit = &quit;
     paramsController.spinners = paramsSpinners;
-    paramsController.state = &paramsDisplay.state;
-    paramsController.money = &money;
+    paramsController.mutex = &mutex;
+    paramsController.cond = &condController;
+    paramsController.display = &paramsDisplay;
     code = pthread_create(&controllerThread, NULL, controller, &paramsController);
     if (code != 0) {
         fprintf(stderr, "pthread_create failed!\n");
         exit(42);
     }
-    for (uint i = 0; i < NUMBER_SPINNERS+1; i++) {
+    for (uint i = 0; i < NUMBER_SPINNERS; i++) {
         pthread_join(threads[i], NULL);
     }
     pthread_join(displayThread, NULL);

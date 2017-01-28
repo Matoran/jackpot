@@ -3,12 +3,14 @@
 #define JACKPOT_CONTROLLER_H
 
 #include "spinner.h"
+#include "display.h"
 
 typedef struct paramsControllerSt {
     bool *quit;
     paramsSpinnerSt *spinners;
-    uint *state;
-    uint *money;
+    pthread_mutex_t *mutex;
+    pthread_cond_t *cond;
+    paramsDisplaySt *display;
 } paramsControllerSt;
 
 void *controller(void *paramsController);

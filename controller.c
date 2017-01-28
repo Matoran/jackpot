@@ -16,6 +16,21 @@
 #include <pthread.h>
 
 
+uint checkWin(paramsControllerSt *pSt) {
+    int counter[SIZE] = {0};
+    for (uint i = 0; i < NUMBER_SPINNERS; ++i) {
+        counter[pSt->spinners[i].pos]++;
+    }
+    for (uint j = 0; j < SIZE; ++j) {
+        if(counter[j] == NUMBER_SPINNERS){
+            return JACKPOT;
+        }else if(counter[j] == NUMBER_SPINNERS-1){
+            return DOUBLE_WIN;
+        }
+    }
+    return LOSE;
+}
+
 void *controller(void *paramsController) {
     paramsControllerSt *params = (paramsControllerSt*)paramsController;
     sigset_t mask, maskold;
@@ -36,7 +51,29 @@ void *controller(void *paramsController) {
                 params->spinners[actualSpinner].run = false;
                 actualSpinner++;
                 if(actualSpinner == NUMBER_SPINNERS){
-                    *params->state = END;
+                    params->display->win = checkWin(params);
+                    switch (params->display->win){
+                        case JACKPOT:
+                            if(*params->display->money > 1){
+                                params->display->lastWin = *params->display->money / 2;
+                            }else{
+                                params->display->lastWin = 1;
+                            }
+                            params->display->money -= params->display->lastWin;
+
+                            break;
+                        case DOUBLE_WIN:
+                            if((*params->display->money - (NUMBER_SPINNERS-1)) < *params->display->money){
+                                params->display->lastWin = NUMBER_SPINNERS-1;
+                            }else{
+                                params->display->lastWin = *params->display->money;
+                            }
+                            *params->display->money -= params->display->lastWin;
+                            break;
+                    }
+                    params->display->state = END;
+                    sleep(5);
+                    params->display->state = BEGIN;
                 }
             }
         }else if (sig == SIGTSTP){ // ctrl + z insert money
@@ -45,12 +82,17 @@ void *controller(void *paramsController) {
                 pthread_cond_signal(params->spinners[i].cond);
             }
             actualSpinner = 0;
-            (*params->money)++;
-            *params->state = GAME;
+            (*params->display->money)++;
+            params->display->state = GAME;
         }else if(sig == SIGUSR1){
 
         }
     } while (sig != SIGQUIT); //ctrl + \ quit game
+    params->display->state = QUIT;
+    pthread_mutex_lock(params->mutex);
+    pthread_cond_wait(params->cond, params->mutex);
+    pthread_mutex_unlock(params->mutex);
+
     *params->quit = true;
     for (int i = 0; i < NUMBER_SPINNERS; i++) {
         pthread_cond_signal(params->spinners[i].cond);
