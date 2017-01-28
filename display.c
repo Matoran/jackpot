@@ -9,7 +9,6 @@
 #include "threads.h"
 #include <stdio.h>
 #include <time.h>
-#include <zconf.h>
 #include <pthread.h>
 
 void *display(void *paramsDisplay) {

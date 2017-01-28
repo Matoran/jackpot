@@ -5,13 +5,10 @@
  * Date : january 2017
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include "controller.h"
 #include "threads.h"
-#include "spinner.h"
-#include "display.h"
 #include <signal.h>
 #include <pthread.h>
 
@@ -38,43 +35,45 @@ void *controller(void *paramsController) {
     sigaddset(&mask, SIGINT);
     sigaddset(&mask, SIGQUIT);
     sigaddset(&mask, SIGTSTP);
+    sigaddset(&mask, SIGALRM);
     pthread_sigmask(SIG_SETMASK, &mask, &maskold);
 
     int sig;
     int actualSpinner = 0;
 
     do {
+        if(actualSpinner == NUMBER_SPINNERS){
+            params->display->win = checkWin(params);
+            switch (params->display->win){
+                case JACKPOT:
+                    if(*params->display->money > 1){
+                        params->display->lastWin = *params->display->money / 2;
+                    }else{
+                        params->display->lastWin = 1;
+                    }
+                    *params->display->money -= params->display->lastWin;
+
+                    break;
+                case DOUBLE_WIN:
+                    if((*params->display->money - (NUMBER_SPINNERS-1)) < *params->display->money){
+                        params->display->lastWin = NUMBER_SPINNERS-1;
+                    }else{
+                        params->display->lastWin = *params->display->money;
+                    }
+                    *params->display->money -= params->display->lastWin;
+                    break;
+                default:break;
+            }
+            params->display->state = END;
+            sleep(5);
+            params->display->state = BEGIN;
+        }
         sigwait(&mask, &sig);
         //ctrl + c stop current spinner
         if (sig == SIGINT){
             if(actualSpinner < NUMBER_SPINNERS){
                 params->spinners[actualSpinner].run = false;
                 actualSpinner++;
-                if(actualSpinner == NUMBER_SPINNERS){
-                    params->display->win = checkWin(params);
-                    switch (params->display->win){
-                        case JACKPOT:
-                            if(*params->display->money > 1){
-                                params->display->lastWin = *params->display->money / 2;
-                            }else{
-                                params->display->lastWin = 1;
-                            }
-                            params->display->money -= params->display->lastWin;
-
-                            break;
-                        case DOUBLE_WIN:
-                            if((*params->display->money - (NUMBER_SPINNERS-1)) < *params->display->money){
-                                params->display->lastWin = NUMBER_SPINNERS-1;
-                            }else{
-                                params->display->lastWin = *params->display->money;
-                            }
-                            *params->display->money -= params->display->lastWin;
-                            break;
-                    }
-                    params->display->state = END;
-                    sleep(5);
-                    params->display->state = BEGIN;
-                }
             }
         }else if (sig == SIGTSTP){ // ctrl + z insert money
             for (int i = 0; i < NUMBER_SPINNERS; i++) {
@@ -84,8 +83,11 @@ void *controller(void *paramsController) {
             actualSpinner = 0;
             (*params->display->money)++;
             params->display->state = GAME;
-        }else if(sig == SIGUSR1){
-
+            alarm(3);
+        }else if(sig == SIGALRM){
+            params->spinners[actualSpinner].run = false;
+            actualSpinner++;
+            alarm(3);
         }
     } while (sig != SIGQUIT); //ctrl + \ quit game
     params->display->state = QUIT;
