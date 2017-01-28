@@ -5,6 +5,8 @@
 #ifndef JACKPOT_THREADS_H
 #define JACKPOT_THREADS_H
 
-void createThreads(uint numberWorkers);
+#define NUMBER_SPINNERS 3
+
+void createThreads();
 
 #endif //JACKPOT_THREADS_H

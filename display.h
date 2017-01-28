@@ -5,11 +5,21 @@
 #ifndef JACKPOT_DISPLAY_H
 #define JACKPOT_DISPLAY_H
 
+#include <stdbool.h>
+#include <zconf.h>
+#include "spinner.h"
+
 #define FREQUENCY 30
 #define BEGIN 0
 #define GAME 1
 #define END 2
 
-extern void *display(void *paramsThread);
+typedef struct paramsDisplaySt {
+    bool *quit;
+    paramsSpinnerSt *spinners;
+    uint state;
+} paramsDisplaySt;
+
+extern void *display(void *paramsDisplay);
 
 #endif //JACKPOT_DISPLAY_H

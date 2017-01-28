@@ -9,7 +9,7 @@
 #include <stdbool.h>
 
 #define ALPHABET "0123456789"
-#define BASETIME 120
+#define BASETIME 120000
 
 typedef struct paramsSpinnerSt {
     uint numberThreads;
@@ -19,8 +19,9 @@ typedef struct paramsSpinnerSt {
     pthread_mutex_t *mutex;
     pthread_cond_t *cond;
     bool *quit;
+    bool run;
 } paramsSpinnerSt;
 
-void *spinner(void *paramsThread);
+void *spinner(void *paramsSpinner);
 
 #endif //JACKPOT_SPINNER_H

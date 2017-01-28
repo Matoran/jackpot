@@ -9,11 +9,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "controller.h"
+#include "threads.h"
+#include "spinner.h"
+#include "display.h"
 #include <signal.h>
+#include <pthread.h>
 
 
-int main() {
-
+void *controller(void *paramsController) {
+    paramsControllerSt *params = (paramsControllerSt*)paramsController;
     sigset_t mask, maskold;
     sigemptyset(&mask);
     sigaddset(&mask, SIGINT);
@@ -22,24 +26,30 @@ int main() {
     pthread_sigmask(SIG_SETMASK, &mask, &maskold);
 
     int sig;
-    int x = 0;
+    int actualSpinner = 0;
 
     do {
         sigwait(&mask, &sig);
+        //ctrl + c stop current spinner
         if (sig == SIGINT){
-            if(x < NThread - 2){
-                wheel.x -> stop = true;
-                x++;
+            if(actualSpinner < NUMBER_SPINNERS){
+                params->spinners[actualSpinner].run = false;
+                actualSpinner++;
             }
-        }else if (sig == SIGTSTP){
-            for (int i = 0; i < (NThread -2); i++) {
-                wheel.i -> restart = true;
-            } //-> pthread_cond_broadcast(pthread_cond_t *cond) ?
-        }
-    } while (sig != SIGQUIT);
+        }else if (sig == SIGTSTP){ // ctrl + z insert money
+            for (int i = 0; i < NUMBER_SPINNERS; i++) {
+                params->spinners[i].run = true;
+                pthread_cond_signal(params->spinners[i].cond);
+            }
+            *params->state = GAME;
+        }else if(sig == SIGUSR1){
 
-    for (int i = 0; i < NThread; i++) {
-        thread.i -> exit = true;
+        }
+    } while (sig != SIGQUIT); //ctrl + \ quit game
+    *params->quit = true;
+    for (int i = 0; i < NUMBER_SPINNERS; i++) {
+
+        //thread.i -> exit = true;
     } //-> pthread_cond_broadcast(pthread_cond_t *cond) ?
 
     return EXIT_SUCCESS;

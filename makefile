@@ -1,15 +1,11 @@
-flags = -std=gnu99 -g -Wall -Wextra
-jackpot: main.o display.o threads.o spinner.o
-	gcc $^ -o jackpot -lrt -lpthread
+version = gcc
+CFLAGS = -std=gnu99 -Wall -Wextra -lpthread
+jackpot: main.o display.o threads.o spinner.o controller.o
+	$(version) $^ -o $@ $(CFLAGS)
+main.o : main.c
+	$(version) -c main.c $(CFLAGS)
 
-main.o: main.c
-	gcc $(flags) -c $<
-
-display.o: display.c display.h
-	gcc $(flags) -c $<
-
-spinner.o: spinner.c spinner.h
-	gcc $(flags) -c $<
-
-threads.o: threads.c threads.h
-	gcc $(flags) -c $<
+%.o: %.c %.h
+	$(version) $(CFLAGS) $< -c
+clean:
+	rm -rf *.o jackpot
