@@ -41,13 +41,9 @@ void *spinner(void *paramsSpinner) {
                 usleep(microSecondToWait - elapsed);
             }
         }
-        pthread_mutex_lock(params->mutex);
-        (*params->spinnersStopped)++;
-        if(*params->spinnersStopped == NUMBER_SPINNERS){
+        if(params->idThread == NUMBER_SPINNERS-1){
             pthread_cond_signal(params->allSpinnersStopped);
-            *params->spinnersStopped = 0;
         }
-        pthread_mutex_unlock(params->mutex);
     }
     return NULL;
 }

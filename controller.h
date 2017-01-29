@@ -11,7 +11,6 @@ typedef struct paramsControllerSt {
     pthread_cond_t *cond;
     paramsDisplaySt *display;
     pthread_cond_t *allSpinnersStopped;
-    uint *spinnersStopped;
 } paramsControllerSt;
 
 void *controller(void *paramsController);

@@ -90,7 +90,6 @@ void *controller(void *paramsController) {
             }
             (*params->display->money)++;
             actualSpinner = 0;
-            *params->spinnersStopped = 0;
             params->display->state = GAME;
             alarm(3);
         }

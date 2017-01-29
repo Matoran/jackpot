@@ -17,7 +17,6 @@ typedef struct paramsSpinnerSt {
     bool *quit;
     bool run;
     pthread_cond_t *allSpinnersStopped;
-    uint *spinnersStopped;
 } paramsSpinnerSt;
 
 void *spinner(void *paramsSpinner);
