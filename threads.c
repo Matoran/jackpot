@@ -14,10 +14,11 @@
 #include "controller.h"
 
 /**
- *
+ * create mask for all threads(inherit)
+ * create shared params, create threads and join them
  * @param numberWorkers
  */
-void createThreads(){
+void createThreads() {
     sigset_t mask;
     sigfillset(&mask);
     pthread_sigmask(SIG_SETMASK, &mask, NULL);
@@ -30,15 +31,13 @@ void createThreads(){
     bool quit = false;
     uint money = MONEY;
 
-
     pthread_mutex_t mutex;
-    pthread_mutex_init(&mutex,NULL);
+    pthread_mutex_init(&mutex, NULL);
 
     //spinners
     for (uint i = 0; i < NUMBER_SPINNERS; i++) {
         paramsSpinners[i].cond = &conditions[i];
-        paramsSpinners[i].idThread = i+1;
-        paramsSpinners[i].numberThreads = NUMBER_SPINNERS;
+        paramsSpinners[i].idThread = i + 1;
         paramsSpinners[i].pos = 0;
         paramsSpinners[i].value = ALPHABET[0];
         paramsSpinners[i].quit = &quit;
@@ -68,6 +67,7 @@ void createThreads(){
         fprintf(stderr, "pthread_create failed!\n");
         exit(42);
     }
+
     //controller
     pthread_t controllerThread;
     paramsControllerSt paramsController;
@@ -86,5 +86,4 @@ void createThreads(){
     }
     pthread_join(displayThread, NULL);
     pthread_join(controllerThread, NULL);
-
 }

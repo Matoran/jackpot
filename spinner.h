@@ -1,19 +1,14 @@
-//
-// Created by matoran on 1/18/17.
-//
-
 #ifndef JACKPOT_SPINNER_H
 #define JACKPOT_SPINNER_H
 
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define ALPHABET "01"
+#define ALPHABET "0123456789"
 #define SIZE (sizeof(ALPHABET)/sizeof(char)-1)
-#define BASETIME 1200000
+#define BASETIME 120000
 
 typedef struct paramsSpinnerSt {
-    uint numberThreads;
     uint idThread;
     uint pos;
     char value;

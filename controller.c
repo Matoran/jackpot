@@ -12,24 +12,48 @@
 #include <signal.h>
 #include <pthread.h>
 
-
-uint checkWin(paramsControllerSt *pSt) {
+/**
+ * check if the user have a jackpot, double win or lose
+ * update money, last win
+ * @param params of the controller
+ */
+void checkWin(paramsControllerSt *params) {
     int counter[SIZE] = {0};
     for (uint i = 0; i < NUMBER_SPINNERS; ++i) {
-        counter[pSt->spinners[i].pos]++;
+        counter[params->spinners[i].pos]++;
     }
     for (uint j = 0; j < SIZE; ++j) {
-        if(counter[j] == NUMBER_SPINNERS){
-            return JACKPOT;
-        }else if(counter[j] == NUMBER_SPINNERS-1){
-            return DOUBLE_WIN;
+        if (counter[j] == NUMBER_SPINNERS) {
+            if (*params->display->money > 1) {
+                params->display->lastWin = *params->display->money / 2;
+            } else {
+                params->display->lastWin = 1;
+            }
+            *params->display->money -= params->display->lastWin;
+            params->display->win = JACKPOT;
+            return;
+        } else if (counter[j] == NUMBER_SPINNERS - 1) {
+            if ((*params->display->money - (NUMBER_SPINNERS - 1)) < *params->display->money) {
+                params->display->lastWin = NUMBER_SPINNERS - 1;
+            } else {
+                params->display->lastWin = *params->display->money;
+            }
+            *params->display->money -= params->display->lastWin;
+            params->display->win = DOUBLE_WIN;
+            return;
         }
     }
-    return LOSE;
+    params->display->win = LOSE;
 }
 
+/**
+ * wait signals(SIGINT, SIGQUIT, SIGTSTP, SIGALRM) and handle it
+ * update game data, like money, last win and display state
+ * @param paramsController
+ * @return NULL
+ */
 void *controller(void *paramsController) {
-    paramsControllerSt *params = (paramsControllerSt*)paramsController;
+    paramsControllerSt *params = (paramsControllerSt *) paramsController;
     sigset_t mask, maskold;
     sigemptyset(&mask);
     sigaddset(&mask, SIGINT);
@@ -42,40 +66,20 @@ void *controller(void *paramsController) {
     int actualSpinner = 0;
 
     do {
-        if(actualSpinner == NUMBER_SPINNERS){
-            params->display->win = checkWin(params);
-            switch (params->display->win){
-                case JACKPOT:
-                    if(*params->display->money > 1){
-                        params->display->lastWin = *params->display->money / 2;
-                    }else{
-                        params->display->lastWin = 1;
-                    }
-                    *params->display->money -= params->display->lastWin;
-
-                    break;
-                case DOUBLE_WIN:
-                    if((*params->display->money - (NUMBER_SPINNERS-1)) < *params->display->money){
-                        params->display->lastWin = NUMBER_SPINNERS-1;
-                    }else{
-                        params->display->lastWin = *params->display->money;
-                    }
-                    *params->display->money -= params->display->lastWin;
-                    break;
-                default:break;
-            }
+        if (actualSpinner == NUMBER_SPINNERS) {
+            checkWin(params);
             params->display->state = END;
+            alarm(0);
             sleep(5);
             params->display->state = BEGIN;
         }
         sigwait(&mask, &sig);
         //ctrl + c stop current spinner
-        if (sig == SIGINT){
-            if(actualSpinner < NUMBER_SPINNERS){
-                params->spinners[actualSpinner].run = false;
-                actualSpinner++;
-            }
-        }else if (sig == SIGTSTP){ // ctrl + z insert money
+        if (sig == SIGINT || sig == SIGALRM) {
+            params->spinners[actualSpinner].run = false;
+            actualSpinner++;
+            alarm(3);
+        } else if (sig == SIGTSTP) { // ctrl + z insert money
             for (int i = 0; i < NUMBER_SPINNERS; i++) {
                 params->spinners[i].run = true;
                 pthread_cond_signal(params->spinners[i].cond);
@@ -83,10 +87,6 @@ void *controller(void *paramsController) {
             actualSpinner = 0;
             (*params->display->money)++;
             params->display->state = GAME;
-            alarm(3);
-        }else if(sig == SIGALRM){
-            params->spinners[actualSpinner].run = false;
-            actualSpinner++;
             alarm(3);
         }
     } while (sig != SIGQUIT); //ctrl + \ quit game
@@ -98,8 +98,7 @@ void *controller(void *paramsController) {
     *params->quit = true;
     for (int i = 0; i < NUMBER_SPINNERS; i++) {
         pthread_cond_signal(params->spinners[i].cond);
-        //thread.i -> exit = true;
-    } //-> pthread_cond_broadcast(pthread_cond_t *cond) ?
+    }
 
     return NULL;
 }

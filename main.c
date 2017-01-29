@@ -1,17 +1,18 @@
-#include <stdio.h>
+/**
+ * @authors: LOPES Marco, ISELI Cyril and RINGOT Gaëtan
+ * Purpose: Jackpot
+ * Language:  C
+ * Date : january 2017
+ */
+
 #include <stdlib.h>
-#include <zconf.h>
-#include <signal.h>
-#include "display.h"
 #include "threads.h"
 
 /**
- *
- * @param argc
- * @param argv
- * @return
+ * Program entry
+ * @return EXIT_SUCCESS
  */
-int main(){
+int main() {
     createThreads();
     return EXIT_SUCCESS;
 }

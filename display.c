@@ -11,9 +11,14 @@
 #include <time.h>
 #include <pthread.h>
 
+/**
+ * display in console actual game state
+ * @param paramsDisplay
+ * @return NULL
+ */
 void *display(void *paramsDisplay) {
-    setbuf(stdout,0);
-    paramsDisplaySt *params = (paramsDisplaySt*) paramsDisplay;
+    setbuf(stdout, 0);
+    paramsDisplaySt *params = (paramsDisplaySt *) paramsDisplay;
     double microSecondToWait = 1000000.0 / FREQUENCY;
     struct timespec start, finish;
     while (!*params->quit) {
@@ -54,7 +59,6 @@ void *display(void *paramsDisplay) {
                     default:
                         printf("error");
                 }
-
                 printf("\e[7;1H");
                 printf("%d coins left in the machine", *params->money);
                 break;
