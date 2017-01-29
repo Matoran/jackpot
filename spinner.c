@@ -42,7 +42,9 @@ void *spinner(void *paramsSpinner) {
             }
         }
         if(params->idThread == NUMBER_SPINNERS-1){
+            pthread_mutex_lock(params->mutex);
             pthread_cond_signal(params->allSpinnersStopped);
+            pthread_mutex_unlock(params->mutex);
         }
     }
     return NULL;

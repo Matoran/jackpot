@@ -24,7 +24,7 @@ void createThreads() {
     pthread_sigmask(SIG_SETMASK, &mask, NULL);
 
     pthread_t threads[NUMBER_SPINNERS];
-    pthread_cond_t conditions[NUMBER_SPINNERS] = {PTHREAD_COND_INITIALIZER};
+    pthread_cond_t spinnersCond = PTHREAD_COND_INITIALIZER;
 
     paramsSpinnerSt paramsSpinners[NUMBER_SPINNERS];
 
@@ -37,7 +37,7 @@ void createThreads() {
     pthread_cond_t allSpinnersStopped = PTHREAD_COND_INITIALIZER;
     //spinners
     for (uint i = 0; i < NUMBER_SPINNERS; i++) {
-        paramsSpinners[i].cond = &conditions[i];
+        paramsSpinners[i].cond = &spinnersCond;
         paramsSpinners[i].idThread = i;
         paramsSpinners[i].pos = 0;
         paramsSpinners[i].value = ALPHABET[0];
@@ -52,7 +52,7 @@ void createThreads() {
         }
     }
 
-    pthread_cond_t condController = PTHREAD_COND_INITIALIZER;
+    pthread_cond_t controllerCond = PTHREAD_COND_INITIALIZER;
 
     //display
     pthread_t displayThread;
@@ -61,9 +61,10 @@ void createThreads() {
     paramsDisplay.spinners = paramsSpinners;
     paramsDisplay.state = BEGIN;
     paramsDisplay.money = &money;
-    paramsDisplay.cond = &condController;
+    paramsDisplay.controllerCond = &controllerCond;
     paramsDisplay.win = LOSE;
     paramsDisplay.lastWin = 0;
+    paramsDisplay.mutex = &mutex;
     int code = pthread_create(&displayThread, NULL, display, &paramsDisplay);
     if (code != 0) {
         fprintf(stderr, "pthread_create failed!\n");
@@ -76,9 +77,10 @@ void createThreads() {
     paramsController.quit = &quit;
     paramsController.spinners = paramsSpinners;
     paramsController.mutex = &mutex;
-    paramsController.cond = &condController;
+    paramsController.condition = &controllerCond;
     paramsController.display = &paramsDisplay;
     paramsController.allSpinnersStopped = &allSpinnersStopped;
+    paramsController.spinnersCond = &spinnersCond;
     code = pthread_create(&controllerThread, NULL, controller, &paramsController);
     if (code != 0) {
         fprintf(stderr, "pthread_create failed!\n");

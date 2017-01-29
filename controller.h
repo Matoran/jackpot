@@ -8,9 +8,10 @@ typedef struct paramsControllerSt {
     bool *quit;
     paramsSpinnerSt *spinners;
     pthread_mutex_t *mutex;
-    pthread_cond_t *cond;
+    pthread_cond_t *condition;
     paramsDisplaySt *display;
     pthread_cond_t *allSpinnersStopped;
+    pthread_cond_t *spinnersCond;
 } paramsControllerSt;
 
 void *controller(void *paramsController);

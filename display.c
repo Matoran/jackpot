@@ -67,7 +67,9 @@ void *display(void *paramsDisplay) {
                 printf("\e[1;1H");
                 printf("Come again soon!");
                 printf("\e[2;1H");
-                pthread_cond_signal(params->cond);
+                pthread_mutex_lock(params->mutex);
+                pthread_cond_signal(params->controllerCond);
+                pthread_mutex_unlock(params->mutex);
                 break;
             default:
                 printf("error unknow state");

@@ -86,8 +86,10 @@ void *controller(void *paramsController) {
         } else if (sig == SIGTSTP) { // ctrl + z insert money
             for (int i = 0; i < NUMBER_SPINNERS; i++) {
                 params->spinners[i].run = true;
-                pthread_cond_signal(params->spinners[i].cond);
             }
+            pthread_mutex_lock(params->mutex);
+            pthread_cond_broadcast(params->spinnersCond);
+            pthread_mutex_unlock(params->mutex);
             (*params->display->money)++;
             actualSpinner = 0;
             params->display->state = GAME;
@@ -96,13 +98,13 @@ void *controller(void *paramsController) {
     } while (sig != SIGQUIT); //ctrl + \ quit game
     params->display->state = QUIT;
     pthread_mutex_lock(params->mutex);
-    pthread_cond_wait(params->cond, params->mutex);
+    pthread_cond_wait(params->condition, params->mutex);
     pthread_mutex_unlock(params->mutex);
 
     *params->quit = true;
-    for (int i = 0; i < NUMBER_SPINNERS; i++) {
-        pthread_cond_signal(params->spinners[i].cond);
-    }
+    pthread_mutex_lock(params->mutex);
+    pthread_cond_broadcast(params->spinnersCond);
+    pthread_mutex_unlock(params->mutex);
 
     return NULL;
 }

@@ -19,9 +19,10 @@ typedef struct paramsDisplaySt {
     paramsSpinnerSt *spinners;
     uint state;
     uint *money;
-    pthread_cond_t *cond;
+    pthread_cond_t *controllerCond;
     uint win;
     uint lastWin;
+    pthread_mutex_t *mutex;
 } paramsDisplaySt;
 
 extern void *display(void *paramsDisplay);
