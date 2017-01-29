@@ -74,11 +74,12 @@ void *controller(void *paramsController) {
             params->display->state = END;
             alarm(0);
             sleep(5);
+            actualSpinner = 0;
             params->display->state = BEGIN;
         }
         sigwait(&mask, &sig);
         //ctrl + c stop current spinner
-        if (sig == SIGINT || sig == SIGALRM) {
+        if (params->display->state == GAME && (sig == SIGINT || sig == SIGALRM)) {
             params->spinners[actualSpinner].run = false;
             actualSpinner++;
             alarm(3);
@@ -87,7 +88,6 @@ void *controller(void *paramsController) {
                 params->spinners[i].run = true;
                 pthread_cond_signal(params->spinners[i].cond);
             }
-            actualSpinner = 0;
             (*params->display->money)++;
             *params->spinnersStopped = 0;
             params->display->state = GAME;
