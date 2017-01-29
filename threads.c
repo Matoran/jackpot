@@ -81,6 +81,7 @@ void createThreads() {
     paramsController.cond = &condController;
     paramsController.display = &paramsDisplay;
     paramsController.allSpinnersStopped = &allSpinnersStopped;
+    paramsController.spinnersStopped = &spinnersStopped;
     code = pthread_create(&controllerThread, NULL, controller, &paramsController);
     if (code != 0) {
         fprintf(stderr, "pthread_create failed!\n");
