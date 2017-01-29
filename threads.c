@@ -39,7 +39,7 @@ void createThreads() {
     //spinners
     for (uint i = 0; i < NUMBER_SPINNERS; i++) {
         paramsSpinners[i].cond = &conditions[i];
-        paramsSpinners[i].idThread = i + 1;
+        paramsSpinners[i].idThread = i;
         paramsSpinners[i].pos = 0;
         paramsSpinners[i].value = ALPHABET[0];
         paramsSpinners[i].quit = &quit;

@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <zconf.h>
+#include <math.h>
 #include "spinner.h"
 #include "threads.h"
 
@@ -21,7 +22,7 @@
 void *spinner(void *paramsSpinner) {
     paramsSpinnerSt *params = (paramsSpinnerSt *) paramsSpinner;
     struct timespec start, finish;
-    double microSecondToWait = BASETIME / params->idThread;
+    double microSecondToWait = BASETIME*1000 / pow(2.0, params->idThread);
     while (!*params->quit) {
         pthread_mutex_lock(params->mutex);
         pthread_cond_wait(params->cond, params->mutex);

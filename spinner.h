@@ -6,7 +6,7 @@
 
 #define ALPHABET "0123456789"
 #define SIZE (sizeof(ALPHABET)/sizeof(char)-1)
-#define BASETIME 120000
+#define BASETIME 120
 
 typedef struct paramsSpinnerSt {
     uint idThread;
