@@ -34,6 +34,8 @@ void createThreads() {
     pthread_mutex_t mutex;
     pthread_mutex_init(&mutex, NULL);
 
+    uint spinnersStopped = 0;
+    pthread_cond_t allSpinnersStopped = PTHREAD_COND_INITIALIZER;
     //spinners
     for (uint i = 0; i < NUMBER_SPINNERS; i++) {
         paramsSpinners[i].cond = &conditions[i];
@@ -43,6 +45,8 @@ void createThreads() {
         paramsSpinners[i].quit = &quit;
         paramsSpinners[i].mutex = &mutex;
         paramsSpinners[i].run = false;
+        paramsSpinners[i].allSpinnersStopped = &allSpinnersStopped;
+        paramsSpinners[i].spinnersStopped = &spinnersStopped;
         int code = pthread_create(&threads[i], NULL, spinner, &paramsSpinners[i]);
         if (code != 0) {
             fprintf(stderr, "pthread_create failed!\n");
@@ -76,6 +80,7 @@ void createThreads() {
     paramsController.mutex = &mutex;
     paramsController.cond = &condController;
     paramsController.display = &paramsDisplay;
+    paramsController.allSpinnersStopped = &allSpinnersStopped;
     code = pthread_create(&controllerThread, NULL, controller, &paramsController);
     if (code != 0) {
         fprintf(stderr, "pthread_create failed!\n");

@@ -67,6 +67,9 @@ void *controller(void *paramsController) {
 
     do {
         if (actualSpinner == NUMBER_SPINNERS) {
+            pthread_mutex_lock(params->mutex);
+            pthread_cond_wait(params->allSpinnersStopped, params->mutex);
+            pthread_mutex_unlock(params->mutex);
             checkWin(params);
             params->display->state = END;
             alarm(0);

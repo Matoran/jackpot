@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define ALPHABET "0123456789"
+#define ALPHABET "MAR"
 #define SIZE (sizeof(ALPHABET)/sizeof(char)-1)
 #define BASETIME 120000
 
@@ -16,6 +16,8 @@ typedef struct paramsSpinnerSt {
     pthread_cond_t *cond;
     bool *quit;
     bool run;
+    pthread_cond_t *allSpinnersStopped;
+    uint *spinnersStopped;
 } paramsSpinnerSt;
 
 void *spinner(void *paramsSpinner);

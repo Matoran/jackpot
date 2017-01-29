@@ -10,6 +10,7 @@
 #include <pthread.h>
 #include <zconf.h>
 #include "spinner.h"
+#include "threads.h"
 
 /**
  * update spinner value every 120 / id thread(1..n) milliseconds
@@ -39,6 +40,13 @@ void *spinner(void *paramsSpinner) {
                 usleep(microSecondToWait - elapsed);
             }
         }
+        pthread_mutex_lock(params->mutex);
+        (*params->spinnersStopped)++;
+        if(*params->spinnersStopped == NUMBER_SPINNERS){
+            pthread_cond_signal(params->allSpinnersStopped);
+            *params->spinnersStopped = 0;
+        }
+        pthread_mutex_unlock(params->mutex);
     }
     return NULL;
 }

@@ -10,6 +10,7 @@ typedef struct paramsControllerSt {
     pthread_mutex_t *mutex;
     pthread_cond_t *cond;
     paramsDisplaySt *display;
+    pthread_cond_t *allSpinnersStopped;
 } paramsControllerSt;
 
 void *controller(void *paramsController);
