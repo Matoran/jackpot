@@ -19,6 +19,6 @@ typedef struct paramsSpinnerSt {
     pthread_cond_t *allSpinnersStopped;
 } paramsSpinnerSt;
 
-void *spinner(void *paramsSpinner);
+extern void *spinner(void *paramsSpinner);
 
 #endif //JACKPOT_SPINNER_H

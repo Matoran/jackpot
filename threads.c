@@ -31,8 +31,7 @@ void createThreads() {
     bool quit = false;
     uint money = MONEY;
 
-    pthread_mutex_t mutex;
-    pthread_mutex_init(&mutex, NULL);
+    pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
     pthread_cond_t allSpinnersStopped = PTHREAD_COND_INITIALIZER;
     //spinners

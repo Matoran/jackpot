@@ -14,6 +14,6 @@ typedef struct paramsControllerSt {
     pthread_cond_t *spinnersCond;
 } paramsControllerSt;
 
-void *controller(void *paramsController);
+extern void *controller(void *paramsController);
 
 #endif //JACKPOT_CONTROLLER_H
